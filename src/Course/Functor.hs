@@ -68,7 +68,7 @@ instance Functor Optional where
 -- 17
 instance Functor ((->) t) where
   (<$>) :: (a -> b) -> (t -> a) -> (t -> b)
-  (<$>) f g = \t -> f . g $ t
+  (<$>) = (.)
 
 -- | Anonymous map. Maps a constant value on a functor.
 --
