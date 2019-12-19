@@ -20,10 +20,7 @@ import qualified Prelude as P((=<<))
 --   `∀f g x. g =<< (f =<< x) ≅ ((g =<<) . f) =<< x`
 class Applicative k => Monad k where
   -- Pronounced, bind.
-  (=<<) ::
-    (a -> k b)
-    -> k a
-    -> k b
+  (=<<) :: (a -> k b) -> k a -> k b
 
 infixr 1 =<<
 
@@ -51,7 +48,7 @@ instance Monad List where
 instance Monad Optional where
   (=<<) :: (a -> Optional b) -> Optional a -> Optional b
   (=<<) f (Full a) = f a
-  (=<<) _ (Empty) = Empty
+  (=<<) _ Empty = Empty
 
 
 -- | Binds a function on the reader ((->) t).
@@ -132,7 +129,7 @@ infixl 1 >>=
 -- >>> ((\n -> n :. n :. Nil) <=< (\n -> n+1 :. n+2 :. Nil)) 1
 -- [2,2,3,3]
 (<=<) :: Monad k => (b -> k c) -> (a -> k b) -> a -> k c
-(<=<) fb fa a = join ((\b -> fb b) <$> fa a)
+(<=<) fc fb a = fc =<< fb a
 
 infixr 1 <=<
 
