@@ -79,52 +79,44 @@ the contents of c
 
 -}
 
+traverz :: Applicative k => (a -> k b) -> List a -> k (List b)
+traverz = (sequence .) . (<$>)
+
 -- Given the file name, and file contents, print them.
 -- Use @putStrLn@.
-printFile ::
-  FilePath
-  -> Chars
-  -> IO ()
-printFile =
-  error "todo: Course.FileIO#printFile"
+printFile :: FilePath -> Chars -> IO ()
+printFile filePathChars fileContentChars =
+  putStrLn ("============ " ++ filePathChars) >> putStrLn fileContentChars
 
 -- Given a list of (file name and file contents), print each.
 -- Use @printFile@.
-printFiles ::
-  List (FilePath, Chars)
-  -> IO ()
-printFiles =
-  error "todo: Course.FileIO#printFiles"
+printFiles :: List (FilePath, Chars) -> IO ()
+-- printFiles ab = foldRight (\(f, c) acc -> printFile f c >> acc) (pure ()) ab
+printFiles = void . traverz (uncurry printFile)
 
 -- Given a file name, return (file name and file contents).
 -- Use @readFile@.
-getFile ::
-  FilePath
-  -> IO (FilePath, Chars)
-getFile =
-  error "todo: Course.FileIO#getFile"
+getFile :: FilePath -> IO (FilePath, Chars)
+getFile fp = (,) fp <$> readFile fp
 
 -- Given a list of file names, return list of (file name and file contents).
 -- Use @getFile@.
-getFiles ::
-  List FilePath
-  -> IO (List (FilePath, Chars))
-getFiles =
-  error "todo: Course.FileIO#getFiles"
+getFiles :: List FilePath -> IO (List (FilePath, Chars))
+getFiles = traverz getFile
+
 
 -- Given a file name, read it and for each line in that file, read and print contents of each.
 -- Use @getFiles@, @lines@, and @printFiles@.
-run ::
-  FilePath
-  -> IO ()
-run =
-  error "todo: Course.FileIO#run"
+run :: FilePath -> IO ()
+-- run fp = (=<<) printFiles . getFiles . lines =<< readFile fp
+run = printFiles <=< getFiles . lines <=< readFile
 
 -- /Tip:/ use @getArgs@ and @run@
-main ::
-  IO ()
-main =
-  error "todo: Course.FileIO#main"
+main :: IO ()
+main = a =<< getArgs
+  where a :: List Chars -> IO()
+        a (arg@(_ :. _) :. _) = run arg
+        a _ = putStrLn "You no give me file bro"
 
 ----
 
